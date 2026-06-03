@@ -1,35 +1,53 @@
-name: Compile Flix Drone Firmware
+name: Build Flix Drone Firmware
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build_firmware:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v4 # v3 မှ v4 သို့ မြှင့်ထားသည်
+      uses: actions/checkout@v4
 
-    - name: Setup Arduino CLI
-      uses: arduino/setup-arduino-cli@v1
+    - name: Install Arduino CLI
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sh
 
-    - name: Install ESP32 Board Core
+    - name: Setup ESP32 Board Core
       run: |
         arduino-cli core update-index --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
         arduino-cli core install esp32:esp32 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
-    - name: Install Exact Project Libraries
+    - name: Install Flix Project Libraries
       run: |
+        # မူရင်း Flix လမ်းညွှန်ချက်အတိုင်း Library ဗားရှင်းများ ကွက်တိသွင်းခြင်း
         arduino-cli lib install "FlixPeriph"
         arduino-cli lib install "MAVLink"@2.0.25
 
-    - name: Compile Code for ESP32-C3
+    - name: Build firmware for ESP32-C3
       run: |
-        arduino-cli compile --fqbn esp32:esp32:esp32c3 --output-dir ./build "./main"
+        # ညီလေး၏ main ဖိုဒါလမ်းကြောင်းအတိုင်း ဝင်ရောက် Compile လုပ်ခြင်း
+        arduino-cli compile --fqbn esp32:esp32:esp32c3 --output-dir ./build_c3 "./main"
 
-    - name: Upload Compiled Binary Artifact
-      uses: actions/upload-artifact@v4 # v3 မှ v4 သို့ မြှင့်ထားသည် (Error ကျော်ဖြတ်ရန်)
+    - name: Build firmware for ESP32-S3
+      run: |
+        # ညီလေး၏ နောက်ထပ် ပရောဂျက် Chip အတွက်ပါ တစ်ခါတည်း ထုတ်ပေးရန် ပြင်ဆင်ထားခြင်း
+        arduino-cli compile --fqbn esp32:esp32:esp32s3 --output-dir ./build_s3 "./main"
+
+    - name: Upload ESP32-C3 Binary
+      uses: actions/upload-artifact@v4
       with:
-        name: flix-esp32c3-binary
-        path: ./build/*.bin
+        name: flix-esp32c3-firmware
+        path: ./build_c3/*.bin
+
+    - name: Upload ESP32-S3 Binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: flix-esp32s3-firmware
+        path: ./build_s3/*.bin
         
