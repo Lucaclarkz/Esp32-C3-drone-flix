@@ -28,10 +28,15 @@ jobs:
         arduino-cli lib install "FlixPeriph"
         arduino-cli lib install "MAVLink"@2.0.25
 
+    - name: Rename Folder to Match Sketch Name
+      run: |
+        # Arduino CLI ၏ စည်းကမ်းနှင့် ကိုက်ညီစေရန် ညီလေး၏ main ဖိုဒါကို flix_esp32C3 ဟု ခေတ္တ နာမည်ပြောင်းပေးခြင်း
+        mv ./main ./flix_esp32C3
+
     - name: Build firmware for ESP32-C3 Only
       run: |
-        # ကျန်တဲ့ board တွေအကုန်ဖြုတ်ပြီး C3 သီးသန့်ကို လမ်းကြောင်းကွက်တိ မောင်းခိုင်းခြင်းဖြစ်သည်
-        arduino-cli compile --fqbn esp32:esp32:esp32c3 --output-dir ./build_c3 "./main/flix_esp32C3.ino"
+        # နာမည်တူသွားပြီဖြစ်၍ အမှားအယွင်းမရှိ တိုက်ရိုက် Compile အောင်မြင်တော့မည်ဖြစ်သည်
+        arduino-cli compile --fqbn esp32:esp32:esp32c3 --output-dir ./build_c3 "./flix_esp32C3"
 
     - name: Upload ESP32-C3 Binary Artifact
       uses: actions/upload-artifact@v4
