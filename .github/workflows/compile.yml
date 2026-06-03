@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # v3 မှ v4 သို့ မြှင့်ထားသည်
 
     - name: Setup Arduino CLI
       uses: arduino/setup-arduino-cli@v1
@@ -20,17 +20,15 @@ jobs:
 
     - name: Install Exact Project Libraries
       run: |
-        # ညီလေးပြထားတဲ့ ဗားရှင်းအတိုင်း ကွက်တိ လှမ်းသွင်းတာဖြစ်ပါတယ်
         arduino-cli lib install "FlixPeriph"
         arduino-cli lib install "MAVLink"@2.0.25
 
     - name: Compile Code for ESP32-C3
       run: |
-        # ညီလေးရဲ့ main ဖိုဒါထဲကို ဝင်ပြီး ဒရုန်းကုဒ်တွေကို ဆွဲ compile လုပ်ခြင်း
         arduino-cli compile --fqbn esp32:esp32:esp32c3 --output-dir ./build "./main"
 
     - name: Upload Compiled Binary Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # v3 မှ v4 သို့ မြှင့်ထားသည် (Error ကျော်ဖြတ်ရန်)
       with:
         name: flix-esp32c3-binary
         path: ./build/*.bin
