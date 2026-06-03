@@ -28,25 +28,14 @@ jobs:
         arduino-cli lib install "FlixPeriph"
         arduino-cli lib install "MAVLink"@2.0.25
 
-    - name: Build firmware for ESP32-C3
+    - name: Build firmware for ESP32-C3 Only
       run: |
-        # ညီလေးပြထားတဲ့ ဖိုင်နာမည်အမှန်အတိုင်း flix_esp32C3.ino လို့ ကွက်တိပြင်ထားပါတယ်
+        # ကျန်တဲ့ board တွေအကုန်ဖြုတ်ပြီး C3 သီးသန့်ကို လမ်းကြောင်းကွက်တိ မောင်းခိုင်းခြင်းဖြစ်သည်
         arduino-cli compile --fqbn esp32:esp32:esp32c3 --output-dir ./build_c3 "./main/flix_esp32C3.ino"
 
-    - name: Build firmware for ESP32-S3
-      run: |
-        # S3 အတွက်ပါ လမ်းကြောင်းမှန်အောင် တစ်ခါတည်း ပြင်ထားပေးခြင်း
-        arduino-cli compile --fqbn esp32:esp32:esp32s3 --output-dir ./build_s3 "./main/flix_esp32C3.ino"
-
-    - name: Upload ESP32-C3 Binary
+    - name: Upload ESP32-C3 Binary Artifact
       uses: actions/upload-artifact@v4
       with:
         name: flix-esp32c3-firmware
         path: ./build_c3/*.bin
-
-    - name: Upload ESP32-S3 Binary
-      uses: actions/upload-artifact@v4
-      with:
-        name: flix-esp32s3-firmware
-        path: ./build_s3/*.bin
         
